@@ -8,185 +8,228 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb/stb_image.h"
 
-namespace agl {
-
-
-Image::Image() {
-}
-
-Image::Image(int width, int height)  {
-
-}
-
-Image::Image(const Image& orig) {
-  
-}
-
-Image& Image::operator=(const Image& orig) {
-  if (&orig == this) {
-    return *this;
-  }
-
-  return *this;
-}
-
-Image::~Image() {
-}
-
-int Image::width() const { 
-   return 0;
-}
-
-int Image::height() const {
-   return 0;
-}
-
-char* Image::data() const {
-   return 0;
-}
-
-void Image::set(int width, int height, unsigned char* data) {
-}
-
-bool Image::load(const std::string& filename, bool flip) {
-  return false;
-}
-
-
-bool Image::save(const std::string& filename, bool flip) const {
-  return false;
-}
-
-Pixel Image::get(int row, int col) const {
-  return Pixel{ 0, 0, 0 };
-}
-
-void Image::set(int row, int col, const Pixel& color) {
- 
-}
-
-
-Pixel Image::get(int i) const
+namespace agl
 {
-   return Pixel{ 0, 0, 0 };
-}
 
-void Image::set(int i, const Pixel& c)
-{
-}
+   Image::Image()
+   {
+   }
 
-Image Image::resize(int w, int h) const {
-   Image result(w, h);
-   return result;
-}
+   Image::Image(int width, int height)
+   {
+   }
 
-Image Image::flipHorizontal() const {
-   Image result(0, 0);
-   return result;
+// copy constructor
+   Image::Image(const Image &orig)
+   {
+      this->image_width = orig.image_width;
+      this->image_height = orig.image_height;
+      this->image_data = orig.image_data;
+   }
 
-}
+// assignment constructor
+   Image &Image::operator=(const Image &orig)
+   {
+      if (&orig == this)
+      {
+         return *this;
+      }
 
-Image Image::flipVertical() const {
-   Image result(0, 0);
-   return result;
-}
+      this->image_width = orig.image_width;
+      this->image_height = orig.image_height;
+      this->image_data = orig.image_data;
 
-Image Image::rotate90() const {
-   Image result(0, 0);
-  
-   return result;
-}
+      return *this;
+   }
 
-Image Image::subimage(int startx, int starty, int w, int h) const {
-  
-   Image sub(0, 0);
-    return sub;
-}
+   Image::~Image()
+   {
+      delete []image_data;
+   }
 
-void Image::replace(const Image& image, int startx, int starty) {
-  
-}
+   int Image::width() const
+   {
+      return image_width;
+   }
 
-Image Image::swirl() const {
-   Image result(0, 0);
-   return result;
-}
+   int Image::height() const
+   {
+      return image_height;
+   }
 
-Image Image::add(const Image& other) const {
-   Image result(0, 0);
-  
-   return result;
-}
+   unsigned char *Image::data() const
+   {
+      return image_data;
+   }
 
-Image Image::subtract(const Image& other) const {
-   Image result(0, 0);
-   
-   return result;
-}
+   void Image::set(int width, int height, unsigned char *data)
+   {
+   }
 
-Image Image::multiply(const Image& other) const {
-   Image result(0, 0);
-   
-   return result;
-}
+   bool Image::load(const std::string &filename, bool flip)
+   {
+      image_data = stbi_load(filename.c_str(), &image_width, &image_height, &original_channel_no, 3);
+      if (!image_data) return false;
+      return true;
+   }
 
-Image Image::difference(const Image& other) const {
-   Image result(0, 0);
-  
-   return result;
-}
+// todo make safe
+   bool Image::save(const std::string &filename, bool flip) const
+   {
+      stbi_write_png(filename.c_str(), image_width, image_height, 3, image_data, 0);
+      return true;
+   }
 
-Image Image::lightest(const Image& other) const {
-   Image result(0, 0);
-  
-   return result;
-}
+// todo make safe
+   Pixel Image::get(int row, int col) const
+   {
+      int index = row * image_width + col - 1;
+      
+      return Pixel{image_data[index], image_data[index+1], image_data[index+2]};
+   }
 
-Image Image::darkest(const Image& other) const {
-   Image result(0, 0);
-  
-   return result;
-}
+   void Image::set(int row, int col, const Pixel &color)
+   {
+   }
 
-Image Image::gammaCorrect(float gamma) const {
+   Pixel Image::get(int i) const
+   {
+      return Pixel{0, 0, 0};
+   }
 
-   Image result(0, 0);
- 
-   return result;
-}
+   void Image::set(int i, const Pixel &c)
+   {
+   }
 
-Image Image::alphaBlend(const Image& other, float alpha) const {
-   Image result(0, 0);
+   Image Image::resize(int w, int h) const
+   {
+      Image result(w, h);
+      return result;
+   }
 
-   return result;
-}
+   Image Image::flipHorizontal() const
+   {
+      Image result(0, 0);
+      return result;
+   }
 
-Image Image::invert() const {
-   Image image(0, 0);
-   
-   return image;
-}
+   Image Image::flipVertical() const
+   {
+      Image result(0, 0);
+      return result;
+   }
 
-Image Image::grayscale() const {
-   Image result(0, 0);
-   
-   return result;
-}
+   Image Image::rotate90() const
+   {
+      Image result(0, 0);
 
-Image Image::colorJitter(int size) const {
-   Image image(0, 0);
-  
-   return image;
-}
+      return result;
+   }
 
-Image Image::bitmap(int size) const {
-   Image image(0, 0);
-   
-   return image;
-}
+   Image Image::subimage(int startx, int starty, int w, int h) const
+   {
 
-void Image::fill(const Pixel& c) {
-  }
+      Image sub(0, 0);
+      return sub;
+   }
 
-}  // namespace agl
+   void Image::replace(const Image &image, int startx, int starty)
+   {
+   }
 
+   Image Image::swirl() const
+   {
+      Image result(0, 0);
+      return result;
+   }
+
+   Image Image::add(const Image &other) const
+   {
+      Image result(0, 0);
+
+      return result;
+   }
+
+   Image Image::subtract(const Image &other) const
+   {
+      Image result(0, 0);
+
+      return result;
+   }
+
+   Image Image::multiply(const Image &other) const
+   {
+      Image result(0, 0);
+
+      return result;
+   }
+
+   Image Image::difference(const Image &other) const
+   {
+      Image result(0, 0);
+
+      return result;
+   }
+
+   Image Image::lightest(const Image &other) const
+   {
+      Image result(0, 0);
+
+      return result;
+   }
+
+   Image Image::darkest(const Image &other) const
+   {
+      Image result(0, 0);
+
+      return result;
+   }
+
+   Image Image::gammaCorrect(float gamma) const
+   {
+
+      Image result(0, 0);
+
+      return result;
+   }
+
+   Image Image::alphaBlend(const Image &other, float alpha) const
+   {
+      Image result(0, 0);
+
+      return result;
+   }
+
+   Image Image::invert() const
+   {
+      Image image(0, 0);
+
+      return image;
+   }
+
+   Image Image::grayscale() const
+   {
+      Image result(0, 0);
+
+      return result;
+   }
+
+   Image Image::colorJitter(int size) const
+   {
+      Image image(0, 0);
+
+      return image;
+   }
+
+   Image Image::bitmap(int size) const
+   {
+      Image image(0, 0);
+
+      return image;
+   }
+
+   void Image::fill(const Pixel &c)
+   {
+   }
+
+} // namespace agl

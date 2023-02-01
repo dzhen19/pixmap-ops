@@ -43,6 +43,8 @@ elseif (UNIX)
     /usr/local/lib
     )
 
+  include_directories(external/include)
+  
   add_definitions(-DUNIX)
   set(CORE GLEW glfw GL X11)
   set(EXECUTABLE_OUTPUT_PATH ${CMAKE_SOURCE_DIR}/bin)
@@ -54,4 +56,3 @@ target_link_libraries(pixmap_test)
 
 add_executable(pixmap_art src/pixmap_art.cpp src/image.cpp src/image.h)
 target_link_libraries(pixmap_art)
-
