@@ -193,8 +193,8 @@ namespace agl
   private:
     int image_width;
     int image_height;
-    int original_channel_no; 
-    unsigned char*image_data;
+    int original_channel_no;
+    unsigned char *image_data;
     // todo
   };
 } // namespace agl

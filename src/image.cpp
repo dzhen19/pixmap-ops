@@ -62,6 +62,7 @@ namespace agl
       return image_data;
    }
 
+// set entire image to another
    void Image::set(int width, int height, unsigned char *data)
    {
    }
@@ -83,13 +84,17 @@ namespace agl
 // todo make safe
    Pixel Image::get(int row, int col) const
    {
-      int index = row * image_width + col - 1;
-      
+      int index = 3* (row * image_width + col);
       return Pixel{image_data[index], image_data[index+1], image_data[index+2]};
    }
 
+// set one specific pixel
    void Image::set(int row, int col, const Pixel &color)
    {
+      int index = 3* (row * image_width + col);
+      image_data[index] = color.r;
+      image_data[index+1] = color.g;
+      image_data[index+2] = color.b;
    }
 
    Pixel Image::get(int i) const
@@ -97,6 +102,7 @@ namespace agl
       return Pixel{0, 0, 0};
    }
 
+// set ith pixel to &c
    void Image::set(int i, const Pixel &c)
    {
    }

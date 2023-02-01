@@ -48,9 +48,6 @@ int main(int argc, char** argv)
       exit(0);
    }
 
-// TODO: finish rest
-   // return 0;
-
    // should print 400 400
    cout << "loaded earth: " << image.width() << " " << image.height() << endl;
 
