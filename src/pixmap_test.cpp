@@ -63,9 +63,9 @@ int main(int argc, char** argv)
    Image flip = image.flipHorizontal(); 
    flip.save("earth-flip.png"); 
 
-   // // sub image
-   // Image sub = image.subimage(200, 200, 100, 100); 
-   // sub.save("earth-subimage.png"); 
+   // sub image
+   Image sub = image.subimage(200, 200, 100, 100); 
+   sub.save("earth-subimage.png"); 
 
    // gamma correction
    Image gamma = image.gammaCorrect(0.6f); 

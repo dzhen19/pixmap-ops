@@ -42,6 +42,7 @@ namespace agl
       this->image_width = orig.image_width;
       this->image_height = orig.image_height;
       this->image_data = orig.image_data;
+      this->original_channel_no=orig.original_channel_no;
 
       return *this;
    }
@@ -166,9 +167,18 @@ namespace agl
 
    Image Image::subimage(int startx, int starty, int w, int h) const
    {
+      Image result(w, h);
 
-      Image sub(0, 0);
-      return sub;
+      for (int r = 0; r < h; r++)
+      {
+         for (int c = 0; c < w; c++)
+         {
+            Pixel pix = get(starty + r, startx + c);
+            result.set(r, c, pix);
+         }
+      }
+
+      return result;
    }
 
    void Image::replace(const Image &image, int startx, int starty)
@@ -223,6 +233,7 @@ namespace agl
       return result;
    }
 
+   // fixme
    Image Image::gammaCorrect(float gamma) const
    {
       // a_prime = a ^ (1/gamma)
@@ -234,9 +245,9 @@ namespace agl
          {
             Pixel pix = get(r, c);
             float red = (float)(pix.r) / 255;
-            float blue = (float)(pix.g) / 255;
-            float green = (float)(pix.b) / 255;
-            Pixel corrected = {pow(red, 1/gamma) * 255, pow(green, 1/gamma)*255, pow(blue, 1/gamma)*255};
+            float blue = (float)(pix.b) / 255;
+            float green = (float)(pix.g) / 255;
+            Pixel corrected = {pow(red, 1 / gamma) * 255, pow(green, 1 / gamma) * 255, pow(blue, 1 / gamma) * 255};
             result.set(r, c, corrected);
          }
       }
