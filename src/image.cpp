@@ -20,7 +20,7 @@ namespace agl
       image_width = width;
       image_height = height;
       original_channel_no = 3;
-      image_data = new unsigned char [width * height * 3];
+      image_data = new unsigned char[width * height * 3];
    }
 
    // copy constructor
@@ -127,7 +127,7 @@ namespace agl
             float c_pct = c * 1.0 / w;
             int orig_c = floor(c_pct * image_width);
             int orig_r = floor(r_pct * image_height);
-            
+
             Pixel pix = get(orig_r, orig_c);
             result.set(r, c, pix);
          }
@@ -138,13 +138,17 @@ namespace agl
 
    Image Image::flipHorizontal() const
    {
-      Image result(0, 0);
-      return result;
-      //             for (int r = 0; r < h; r++)
-      // {
-      //    for (int c = 0; c < w; c++)
+      Image result(image_width, image_height);
+      for (int r = 0; r < image_height; r++)
+      {
+         for (int c = 0; c < image_width; c++)
+         {
+            Pixel pix = get(r, image_width - c);
+            result.set(r, c, pix);
+         }
+      }
 
-      
+      return result;
    }
 
    Image Image::flipVertical() const
@@ -221,9 +225,21 @@ namespace agl
 
    Image Image::gammaCorrect(float gamma) const
    {
+      // a_prime = a ^ (1/gamma)
+      Image result(image_width, image_height);
 
-      Image result(0, 0);
-
+      for (int r = 0; r < image_height; r++)
+      {
+         for (int c = 0; c < image_width; c++)
+         {
+            Pixel pix = get(r, c);
+            float red = (float)(pix.r) / 255;
+            float blue = (float)(pix.g) / 255;
+            float green = (float)(pix.b) / 255;
+            Pixel corrected = {pow(red, 1/gamma) * 255, pow(green, 1/gamma)*255, pow(blue, 1/gamma)*255};
+            result.set(r, c, corrected);
+         }
+      }
       return result;
    }
 
@@ -248,14 +264,14 @@ namespace agl
       for (int r = 0; r < image_height; r++)
       {
          for (int c = 0; c < image_width; c++)
-         { 
+         {
             Pixel pix = get(r, c);
             float red = (float)(pix.r);
             float blue = (float)(pix.g);
             float green = (float)(pix.b);
 
-            int avg = (red * .2126 + blue *.7152 + green* .0722);
-            // 0.2126 * R + 0.7152 * G + 0.0722 * B 
+            int avg = (red * .2126 + blue * .7152 + green * .0722);
+            // 0.2126 * R + 0.7152 * G + 0.0722 * B
 
             Pixel grayed = {avg, avg, avg};
             result.set(r, c, grayed);
