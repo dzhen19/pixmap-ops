@@ -59,31 +59,31 @@ int main(int argc, char** argv)
    Image grayscale = image.grayscale(); 
    grayscale.save("earth-grayscale.png");
 
-   // flip horizontal
-   Image flip = image.flipHorizontal(); 
-   flip.save("earth-flip.png"); 
+   // // flip horizontal
+   // Image flip = image.flipHorizontal(); 
+   // flip.save("earth-flip.png"); 
 
-   // sub image
-   Image sub = image.subimage(200, 200, 100, 100); 
-   sub.save("earth-subimage.png"); 
+   // // sub image
+   // Image sub = image.subimage(200, 200, 100, 100); 
+   // sub.save("earth-subimage.png"); 
 
-   // gamma correction
-   Image gamma = image.gammaCorrect(0.6f); 
-   gamma.save("earth-gamma-0.6.png"); 
+   // // gamma correction
+   // Image gamma = image.gammaCorrect(0.6f); 
+   // gamma.save("earth-gamma-0.6.png"); 
 
-   gamma = image.gammaCorrect(2.2f);
-   gamma.save("earth-gamma-2.2.png"); 
+   // gamma = image.gammaCorrect(2.2f);
+   // gamma.save("earth-gamma-2.2.png"); 
 
-   // alpha blend
-   Image soup;
-   soup.load("../images/soup.png");
+   // // alpha blend
+   // Image soup;
+   // soup.load("../images/soup.png");
 
-   int y = (int) (0.5f * (image.width() - soup.width()));
-   int x = (int) (0.5f * (image.height() - soup.height()));
-   Image background = image.subimage(x, y, soup.width(), soup.height());
-   background.save("background-test.png");
-   Image blend = background.alphaBlend(soup, 0.5f);
-   image.replace(blend, x, y);
-   image.save("earth-blend-0.5.png");
+   // int y = (int) (0.5f * (image.width() - soup.width()));
+   // int x = (int) (0.5f * (image.height() - soup.height()));
+   // Image background = image.subimage(x, y, soup.width(), soup.height());
+   // background.save("background-test.png");
+   // Image blend = background.alphaBlend(soup, 0.5f);
+   // image.replace(blend, x, y);
+   // image.save("earth-blend-0.5.png");
 }
 

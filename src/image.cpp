@@ -17,9 +17,13 @@ namespace agl
 
    Image::Image(int width, int height)
    {
+      image_width = width;
+      image_height = height;
+      original_channel_no = 3;
+      image_data = new unsigned char [width * height * 3];
    }
 
-// copy constructor
+   // copy constructor
    Image::Image(const Image &orig)
    {
       this->image_width = orig.image_width;
@@ -27,7 +31,7 @@ namespace agl
       this->image_data = orig.image_data;
    }
 
-// assignment constructor
+   // assignment constructor
    Image &Image::operator=(const Image &orig)
    {
       if (&orig == this)
@@ -44,7 +48,7 @@ namespace agl
 
    Image::~Image()
    {
-      delete []image_data;
+      delete[] image_data;
    }
 
    int Image::width() const
@@ -62,39 +66,43 @@ namespace agl
       return image_data;
    }
 
-// set entire image to another
+   // set entire image to another
    void Image::set(int width, int height, unsigned char *data)
    {
+      image_width = width;
+      image_height = width;
+      image_data = data;
    }
 
    bool Image::load(const std::string &filename, bool flip)
    {
       image_data = stbi_load(filename.c_str(), &image_width, &image_height, &original_channel_no, 3);
-      if (!image_data) return false;
+      if (!image_data)
+         return false;
       return true;
    }
 
-// todo make safe
+   // todo make safe
    bool Image::save(const std::string &filename, bool flip) const
    {
       stbi_write_png(filename.c_str(), image_width, image_height, 3, image_data, 0);
       return true;
    }
 
-// todo make safe
+   // todo make safe
    Pixel Image::get(int row, int col) const
    {
-      int index = 3* (row * image_width + col);
-      return Pixel{image_data[index], image_data[index+1], image_data[index+2]};
+      int index = 3 * (row * image_width + col);
+      return Pixel{image_data[index], image_data[index + 1], image_data[index + 2]};
    }
 
-// set one specific pixel
+   // set one specific pixel
    void Image::set(int row, int col, const Pixel &color)
    {
-      int index = 3* (row * image_width + col);
+      int index = 3 * (row * image_width + col);
       image_data[index] = color.r;
-      image_data[index+1] = color.g;
-      image_data[index+2] = color.b;
+      image_data[index + 1] = color.g;
+      image_data[index + 2] = color.b;
    }
 
    Pixel Image::get(int i) const
@@ -102,7 +110,7 @@ namespace agl
       return Pixel{0, 0, 0};
    }
 
-// set ith pixel to &c
+   // set ith pixel to &c
    void Image::set(int i, const Pixel &c)
    {
    }
@@ -110,6 +118,21 @@ namespace agl
    Image Image::resize(int w, int h) const
    {
       Image result(w, h);
+
+      for (int r = 0; r < h; r++)
+      {
+         for (int c = 0; c < w; c++)
+         {
+            float r_pct = r * 1.0 / h;
+            float c_pct = c * 1.0 / w;
+            int orig_c = floor(c_pct * image_width);
+            int orig_r = floor(r_pct * image_height);
+            
+            Pixel pix = get(orig_r, orig_c);
+            result.set(r, c, pix);
+         }
+      }
+
       return result;
    }
 
@@ -117,6 +140,11 @@ namespace agl
    {
       Image result(0, 0);
       return result;
+      //             for (int r = 0; r < h; r++)
+      // {
+      //    for (int c = 0; c < w; c++)
+
+      
    }
 
    Image Image::flipVertical() const
@@ -215,8 +243,24 @@ namespace agl
 
    Image Image::grayscale() const
    {
-      Image result(0, 0);
+      Image result(image_width, image_height);
 
+      for (int r = 0; r < image_height; r++)
+      {
+         for (int c = 0; c < image_width; c++)
+         { 
+            Pixel pix = get(r, c);
+            float red = (float)(pix.r);
+            float blue = (float)(pix.g);
+            float green = (float)(pix.b);
+
+            int avg = (red * .2126 + blue *.7152 + green* .0722);
+            // 0.2126 * R + 0.7152 * G + 0.0722 * B 
+
+            Pixel grayed = {avg, avg, avg};
+            result.set(r, c, grayed);
+         }
+      }
       return result;
    }
 
