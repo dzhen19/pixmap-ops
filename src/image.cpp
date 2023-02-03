@@ -1,4 +1,11 @@
 // Copyright 2021, Aline Normoyle, alinen
+/**
+ * This file defines methods for the Image class. 
+ * 
+ * @author: Derrick Zhen
+ * @version: 2/2/2023
+ *
+ */ 
 
 #include "image.h"
 

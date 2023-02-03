@@ -1,4 +1,11 @@
 // Copyright 2021, Aline Normoyle, alinen
+/**
+ * This file is the header file for the Image class and Pixel struct. 
+ * 
+ * @author: Derrick Zhen
+ * @version: 2/2/2023
+ *
+ */ 
 
 #ifndef AGL_IMAGE_H_
 #define AGL_IMAGE_H_
