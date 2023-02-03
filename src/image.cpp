@@ -31,18 +31,25 @@ namespace agl
       this->image_data = orig.image_data;
    }
 
-   // assignment constructor
+   // assignment operator
    Image &Image::operator=(const Image &orig)
    {
+      this->image_width = orig.image_width;
+      this->image_height = orig.image_height;
+      // this->image_data = orig.image_data;
+      int size = orig.image_width * orig.image_height * 3;
+      this->image_data = new unsigned char[size];
+
+      for (int i = 0; i < size; i++){
+         this->image_data[i] = orig.image_data[i];
+      }
+
+      this->original_channel_no=orig.original_channel_no;
+
       if (&orig == this)
       {
          return *this;
       }
-
-      this->image_width = orig.image_width;
-      this->image_height = orig.image_height;
-      this->image_data = orig.image_data;
-      this->original_channel_no=orig.original_channel_no;
 
       return *this;
    }
