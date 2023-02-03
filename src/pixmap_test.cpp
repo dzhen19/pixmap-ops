@@ -74,16 +74,19 @@ int main(int argc, char** argv)
    gamma = image.gammaCorrect(2.2f);
    gamma.save("earth-gamma-2.2.png"); 
 
-   // // alpha blend
-   // Image soup;
-   // soup.load("../images/soup.png");
+   // alpha blend
+   Image soup;
+   soup.load("../images/soup.png");
 
-   // int y = (int) (0.5f * (image.width() - soup.width()));
-   // int x = (int) (0.5f * (image.height() - soup.height()));
-   // Image background = image.subimage(x, y, soup.width(), soup.height());
-   // background.save("background-test.png");
-   // Image blend = background.alphaBlend(soup, 0.5f);
-   // image.replace(blend, x, y);
-   // image.save("earth-blend-0.5.png");
+   int y = (int) (0.5f * (image.width() - soup.width()));
+   int x = (int) (0.5f * (image.height() - soup.height()));
+   Image background = image.subimage(x, y, soup.width(), soup.height());
+   background.save("background-test.png");
+   Image blend = background.alphaBlend(soup, 0.5f);
+
+   blend.save("blend_test.png");
+
+   image.replace(blend, x, y);
+   image.save("earth-blend-0.5.png");
 }
 

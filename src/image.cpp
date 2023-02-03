@@ -40,11 +40,12 @@ namespace agl
       int size = orig.image_width * orig.image_height * 3;
       this->image_data = new unsigned char[size];
 
-      for (int i = 0; i < size; i++){
+      for (int i = 0; i < size; i++)
+      {
          this->image_data[i] = orig.image_data[i];
       }
 
-      this->original_channel_no=orig.original_channel_no;
+      this->original_channel_no = orig.original_channel_no;
 
       if (&orig == this)
       {
@@ -190,6 +191,17 @@ namespace agl
 
    void Image::replace(const Image &image, int startx, int starty)
    {
+      // loop through and replace
+      int replace_width = image.image_width;
+      int replace_height = image.image_height;
+      for (int r1 = 0; r1 < replace_height; r1++)
+      {
+         for (int c1 = 0; c1 < replace_width; c1++)
+         {
+            Pixel new_pix = image.get(r1, c1);
+            set(startx + r1, starty + c1, new_pix);
+         }
+      }
    }
 
    Image Image::swirl() const
@@ -240,10 +252,8 @@ namespace agl
       return result;
    }
 
-   // fixme
    Image Image::gammaCorrect(float gamma) const
    {
-      // a_prime = a ^ (1/gamma)
       Image result(image_width, image_height);
 
       for (int r = 0; r < image_height; r++)
@@ -263,7 +273,31 @@ namespace agl
 
    Image Image::alphaBlend(const Image &other, float alpha) const
    {
-      Image result(0, 0);
+      float orig_alpha = 1 - alpha;
+      Image result(image_width, image_height);
+
+      for (int r = 0; r < image_height; r++)
+      {
+         for (int c = 0; c < image_width; c++)
+         {
+            Pixel pix = get(r, c);
+            Pixel new_pix = other.get(r, c);
+            float faded_orig_red = (float)(pix.r) * orig_alpha;
+            float faded_orig_green = (float)(pix.g) * orig_alpha;
+            float faded_orig_blue = (float)(pix.b) * orig_alpha;
+
+            float faded_new_red = (float)(new_pix.r) * alpha;
+            float faded_new_green = (float)(new_pix.g) * alpha;
+            float faded_new_blue = (float)(new_pix.b) * alpha;
+
+            float blended_red = faded_orig_red + faded_new_red;
+            float blended_green = faded_orig_green + faded_new_green;
+            float blended_blue = faded_orig_blue + faded_new_blue;
+
+            Pixel blended = {blended_red, blended_green, blended_blue};
+            result.set(r, c, blended);
+         }
+      }
 
       return result;
    }
