@@ -13,6 +13,9 @@ namespace agl
 
    Image::Image()
    {
+      image_width = 0;
+      image_height = 0;
+      original_channel_no = 3;
    }
 
    Image::Image(int width, int height)
@@ -28,7 +31,13 @@ namespace agl
    {
       this->image_width = orig.image_width;
       this->image_height = orig.image_height;
-      this->image_data = orig.image_data;
+
+      int size = orig.image_width * orig.image_height * 3;
+      this->image_data = new unsigned char[size];
+      for (int i = 0; i < size; i++)
+      {
+         this->image_data[i] = orig.image_data[i];
+      }
    }
 
    // assignment operator
@@ -38,6 +47,7 @@ namespace agl
       this->image_height = orig.image_height;
       // this->image_data = orig.image_data;
       int size = orig.image_width * orig.image_height * 3;
+      delete[] this->image_data;
       this->image_data = new unsigned char[size];
 
       for (int i = 0; i < size; i++)
