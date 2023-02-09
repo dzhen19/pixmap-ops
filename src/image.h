@@ -197,6 +197,8 @@ namespace agl
     // Fill this image with a color
     void fill(const Pixel &c);
 
+    Image gaussian() const;
+
   private:
     int image_width;
     int image_height;

@@ -219,7 +219,6 @@ namespace agl
       return result;
    }
 
-   // todo: finish
    Image Image::rotate90() const
    {
       Image result(image_height, image_width);
