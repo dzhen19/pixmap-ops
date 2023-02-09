@@ -9,15 +9,18 @@ int main(int argc, char **argv)
    Image image;
    image.load("../images/earth.png");
 
-   Image other;
-   other.load("../images/flare.png");
+   // Image other;
+   // other.load("../images/flare.png");
 
-   // Image result = image.rotate90();
+   // Image blend = image.lightest(other);
+   // blend.save("test_earth.png");
 
-   // Image blend = image.alphaBlend(other, 0.5f);
-   Image blend = image.lightest(other);
-   blend.save("test_earth.png");
+   // Pixel white = {(unsigned char)255,
+   //                (unsigned char)255,
+   //                (unsigned char)255};
+   // image.fill(white);
 
-   // result.save("flipped.png");
+   Image result = image.gaussian();
+   result.save("test.png");
    return 0;
 }

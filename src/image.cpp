@@ -1,7 +1,7 @@
 // Copyright 2021, Aline Normoyle, alinen
 /**
- * This file defines methods for the Image class. 
- * 
+ * This file defines methods for the Image class.
+ *
  * @author: Derrick Zhen
  * @version: 2/2/2023
  *
@@ -277,7 +277,9 @@ namespace agl
             float blue = 255 - (float)(pix.b);
             float green = 255 - (float)(pix.g);
 
-            Pixel swirled = {pix.g, pix.b, pix.r};
+            Pixel swirled = {(unsigned char)pix.g,
+                             (unsigned char)pix.b,
+                             (unsigned char)pix.r};
 
             result.set(r, c, swirled);
          }
@@ -301,7 +303,9 @@ namespace agl
             float blue = clamp(new_pix.b + pix.b);
             float green = clamp(new_pix.g + pix.g);
 
-            Pixel added = {red, green, blue};
+            Pixel added = {(unsigned char)red,
+                           (unsigned char)green,
+                           (unsigned char)blue};
             result.set(r, c, added);
          }
       }
@@ -324,7 +328,9 @@ namespace agl
             float blue = clamp(pix.b - new_pix.b);
             float green = clamp(pix.g - new_pix.g);
 
-            Pixel subtract = {red, green, blue};
+            Pixel subtract = {(unsigned char)red,
+                              (unsigned char)green,
+                              (unsigned char)blue};
             result.set(r, c, subtract);
          }
       }
@@ -347,7 +353,9 @@ namespace agl
             int blue = clamp((int)new_pix.b * pix.b);
             int green = clamp((int)new_pix.g * pix.g);
 
-            Pixel multiplied = {red, green, blue};
+            Pixel multiplied = {(unsigned char)red,
+                                (unsigned char)green,
+                                (unsigned char)blue};
             result.set(r, c, multiplied);
          }
       }
@@ -370,7 +378,9 @@ namespace agl
             float blue = std::abs(new_pix.b - pix.b);
             float green = std::abs(new_pix.g - pix.g);
 
-            Pixel blended = {red, green, blue};
+            Pixel blended = {(unsigned char)red,
+                             (unsigned char)green,
+                             (unsigned char)blue};
             result.set(r, c, blended);
          }
       }
@@ -393,7 +403,9 @@ namespace agl
             float blue = max(new_pix.b, pix.b);
             float green = max(new_pix.g, pix.g);
 
-            Pixel lightest = {red, green, blue};
+            Pixel lightest = {(unsigned char)red,
+                              (unsigned char)green,
+                              (unsigned char)blue};
             result.set(r, c, lightest);
          }
       }
@@ -416,7 +428,9 @@ namespace agl
             float blue = min(new_pix.b, pix.b);
             float green = min(new_pix.g, pix.g);
 
-            Pixel darkest = {red, green, blue};
+            Pixel darkest = {(unsigned char)red,
+                             (unsigned char)green,
+                             (unsigned char)blue};
             result.set(r, c, darkest);
          }
       }
@@ -433,10 +447,12 @@ namespace agl
          for (int c = 0; c < image_width; c++)
          {
             Pixel pix = get(r, c);
-            float red = (float)(pix.r) / 255;
-            float blue = (float)(pix.b) / 255;
-            float green = (float)(pix.g) / 255;
-            Pixel corrected = {pow(red, 1 / gamma) * 255, pow(green, 1 / gamma) * 255, pow(blue, 1 / gamma) * 255};
+            float red = pow((float)(pix.r) / 255, 1 / gamma) * 255;
+            float green = pow((float)(pix.g) / 255, 1 / gamma) * 255;
+            float blue = pow((float)(pix.b) / 255, 1 / gamma) * 255;
+            Pixel corrected = {(unsigned char)red,
+                               (unsigned char)green,
+                               (unsigned char)blue};
             result.set(r, c, corrected);
          }
       }
@@ -466,7 +482,9 @@ namespace agl
             float blended_green = faded_orig_green + faded_new_green;
             float blended_blue = faded_orig_blue + faded_new_blue;
 
-            Pixel blended = {blended_red, blended_green, blended_blue};
+            Pixel blended = {(unsigned char)blended_red,
+                             (unsigned char)blended_green,
+                             (unsigned char)blended_blue};
             result.set(r, c, blended);
          }
       }
@@ -486,7 +504,9 @@ namespace agl
             float blue = 255 - (float)(pix.b);
             float green = 255 - (float)(pix.g);
 
-            Pixel inverted = {red, green, blue};
+            Pixel inverted = {(unsigned char)red,
+                              (unsigned char)green,
+                              (unsigned char)blue};
 
             result.set(r, c, inverted);
          }
@@ -510,8 +530,50 @@ namespace agl
 
             int avg = (red * .2126 + blue * .7152 + green * .0722);
 
-            Pixel grayed = {avg, avg, avg};
+            Pixel grayed = {(unsigned char)avg,
+                            (unsigned char)avg,
+                            (unsigned char)avg};
             result.set(r, c, grayed);
+         }
+      }
+      return result;
+   }
+
+   Image Image::gaussian() const
+   {
+      Image result(image_width, image_height);
+      for (int r = 0; r < image_height; r++)
+      {
+         for (int c = 0; c < image_width; c++)
+         {
+            // handle edges - don't blur
+            if (r == 0 || c == 0 || r == image_height - 1 || c == image_width - 1)
+            {
+               Pixel pix = get(r, c);
+               result.set(r, c, pix);
+            }
+            else
+            {
+               // apply gaussian to neighbors
+               Pixel pix = get(r, c);
+               Pixel tl = get(r - 1, c - 1);
+               Pixel tr = get(r - 1, c + 1);
+               Pixel bl = get(r + 1, c - 1);
+               Pixel br = get(r + 1, c + 1);
+               Pixel t = get(r, c - 1);
+               Pixel b = get(r, c + 1);
+               Pixel l = get(r - 1, c);
+               Pixel right = get(r + 1, c);
+
+               float red = (tl.r + tr.r + bl.r + br.r + t.r + b.r + l.r + right.r + pix.r) / 9;
+               float green = (tl.g + tr.g + bl.g + br.g + t.g + b.g + l.g + right.g + pix.g) / 9;
+               float blue = (tl.b + tr.b + bl.b + br.b + t.b + b.b + l.b + right.b + pix.b) / 9;
+
+               Pixel gaussed = {(unsigned char)red,
+                                (unsigned char)green,
+                                (unsigned char)blue};
+               result.set(r, c, gaussed);
+            }
          }
       }
       return result;
@@ -531,8 +593,15 @@ namespace agl
       return image;
    }
 
-   void Image::fill(const Pixel &c)
+   void Image::fill(const Pixel &pix)
    {
+      for (int r = 0; r < image_height; r++)
+      {
+         for (int c = 0; c < image_width; c++)
+         {
+            set(r, c, pix);
+         }
+      }
    }
 
 } // namespace agl
