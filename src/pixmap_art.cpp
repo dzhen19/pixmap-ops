@@ -3,20 +3,21 @@
 using namespace std;
 using namespace agl;
 
-int main(int argc, char** argv)
+int main(int argc, char **argv)
 {
    // todo: make at least one artwork!
    Image image;
-   image.load("../images/earth.png");
+   image.load("../images/soup.png");
 
-   Image other;
-   other.load("../images/shrek.png");
+   // Image other;
+   // other.load("../images/flare.png");
 
-   // Image result = image.invert();
-   // Image result = image.swirl(); 
-   Image blend = image.alphaBlend(other, 0.5f);
+   Image result = image.rotate90();
 
-   blend.save("test_earth.png");
+   // Image blend = image.alphaBlend(other, 0.5f);
+   // Image blend = image.subtract(other);
+   // blend.save("test_earth.png");
+
+   result.save("flipped.png");
    return 0;
 }
-

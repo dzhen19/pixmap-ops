@@ -5,7 +5,7 @@
  * @author: Derrick Zhen
  * @version: 2/2/2023
  *
- */ 
+ */
 
 #ifndef AGL_IMAGE_H_
 #define AGL_IMAGE_H_
@@ -202,7 +202,6 @@ namespace agl
     int image_height;
     int original_channel_no;
     unsigned char *image_data;
-    // todo
   };
 } // namespace agl
 #endif // AGL_IMAGE_H_

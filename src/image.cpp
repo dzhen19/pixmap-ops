@@ -15,6 +15,33 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb/stb_image.h"
 
+int clamp(int value)
+{
+   if (value < 0)
+   {
+      return 0;
+   }
+   if (value > 255)
+   {
+      return 255;
+   }
+   return value;
+}
+
+int min(int a, int b)
+{
+   if (a < b)
+      return a;
+   return b;
+}
+
+int max(int a, int b)
+{
+   if (a > b)
+      return a;
+   return b;
+}
+
 namespace agl
 {
 
@@ -179,14 +206,31 @@ namespace agl
 
    Image Image::flipVertical() const
    {
-      Image result(0, 0);
+      Image result(image_width, image_height);
+      for (int r = 0; r < image_height; r++)
+      {
+         for (int c = 0; c < image_width; c++)
+         {
+            Pixel pix = get(image_height - r, c);
+            result.set(r, c, pix);
+         }
+      }
+
       return result;
    }
 
-   // TODO
+   // todo: finish
    Image Image::rotate90() const
    {
-      Image result(0, 0);
+      Image result(image_height, image_width);
+      for (int c = 0; c < image_width; c++)
+      {
+         for (int r = 0; r < image_height; r++)
+         {
+            Pixel pix = get(image_height - r, c);
+            result.set(c, r, pix);
+         }
+      }
 
       return result;
    }
@@ -234,9 +278,9 @@ namespace agl
             float blue = 255 - (float)(pix.b);
             float green = 255 - (float)(pix.g);
 
-            Pixel inverted = {pix.g, pix.b, pix.r};
+            Pixel swirled = {pix.g, pix.b, pix.r};
 
-            result.set(r, c, inverted);
+            result.set(r, c, swirled);
          }
       }
 
@@ -245,42 +289,138 @@ namespace agl
 
    Image Image::add(const Image &other) const
    {
-      Image result(0, 0);
+      Image result(image_width, image_height);
+
+      for (int r = 0; r < image_height; r++)
+      {
+         for (int c = 0; c < image_width; c++)
+         {
+            Pixel pix = get(r, c);
+            Pixel new_pix = other.get(r, c);
+
+            float red = clamp(new_pix.r + pix.r);
+            float blue = clamp(new_pix.b + pix.b);
+            float green = clamp(new_pix.g + pix.g);
+
+            Pixel added = {red, green, blue};
+            result.set(r, c, added);
+         }
+      }
 
       return result;
    }
 
    Image Image::subtract(const Image &other) const
    {
-      Image result(0, 0);
+      Image result(image_width, image_height);
+
+      for (int r = 0; r < image_height; r++)
+      {
+         for (int c = 0; c < image_width; c++)
+         {
+            Pixel pix = get(r, c);
+            Pixel new_pix = other.get(r, c);
+
+            float red = clamp(pix.r - new_pix.r);
+            float blue = clamp(pix.b - new_pix.b);
+            float green = clamp(pix.g - new_pix.g);
+
+            Pixel subtract = {red, green, blue};
+            result.set(r, c, subtract);
+         }
+      }
 
       return result;
    }
 
    Image Image::multiply(const Image &other) const
    {
-      Image result(0, 0);
+      Image result(image_width, image_height);
+
+      for (int r = 0; r < image_height; r++)
+      {
+         for (int c = 0; c < image_width; c++)
+         {
+            Pixel pix = get(r, c);
+            Pixel new_pix = other.get(r, c);
+
+            int red = clamp((int)new_pix.r * pix.r);
+            int blue = clamp((int)new_pix.b * pix.b);
+            int green = clamp((int)new_pix.g * pix.g);
+
+            Pixel multiplied = {red, green, blue};
+            result.set(r, c, multiplied);
+         }
+      }
 
       return result;
    }
 
    Image Image::difference(const Image &other) const
    {
-      Image result(0, 0);
+      Image result(image_width, image_height);
+
+      for (int r = 0; r < image_height; r++)
+      {
+         for (int c = 0; c < image_width; c++)
+         {
+            Pixel pix = get(r, c);
+            Pixel new_pix = other.get(r, c);
+
+            float red = std::abs(new_pix.r - pix.r);
+            float blue = std::abs(new_pix.b - pix.b);
+            float green = std::abs(new_pix.g - pix.g);
+
+            Pixel blended = {red, green, blue};
+            result.set(r, c, blended);
+         }
+      }
 
       return result;
    }
 
    Image Image::lightest(const Image &other) const
    {
-      Image result(0, 0);
+      Image result(image_width, image_height);
+
+      for (int r = 0; r < image_height; r++)
+      {
+         for (int c = 0; c < image_width; c++)
+         {
+            Pixel pix = get(r, c);
+            Pixel new_pix = other.get(r, c);
+
+            float red = max(new_pix.r, pix.r);
+            float blue = max(new_pix.b, pix.b);
+            float green = max(new_pix.g, pix.g);
+
+            Pixel lightest = {red, green, blue};
+            result.set(r, c, lightest);
+         }
+      }
 
       return result;
    }
 
    Image Image::darkest(const Image &other) const
    {
-      Image result(0, 0);
+      Image result(image_width, image_height);
+
+      for (int r = 0; r < image_height; r++)
+      {
+         for (int c = 0; c < image_width; c++)
+         {
+            Pixel pix = get(r, c);
+            Pixel new_pix = other.get(r, c);
+
+            float red = min(new_pix.r, pix.r);
+            float blue = min(new_pix.b, pix.b);
+            float green = min(new_pix.g, pix.g);
+
+            Pixel darkest = {red, green, blue};
+            result.set(r, c, darkest);
+         }
+      }
 
       return result;
    }
@@ -335,7 +475,6 @@ namespace agl
       return result;
    }
 
-   // done
    Image Image::invert() const
    {
       Image result(image_width, image_height);
@@ -371,7 +510,6 @@ namespace agl
             float green = (float)(pix.b);
 
             int avg = (red * .2126 + blue * .7152 + green * .0722);
-            // 0.2126 * R + 0.7152 * G + 0.0722 * B
 
             Pixel grayed = {avg, avg, avg};
             result.set(r, c, grayed);
