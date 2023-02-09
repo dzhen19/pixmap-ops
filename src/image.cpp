@@ -5,7 +5,7 @@
  * @author: Derrick Zhen
  * @version: 2/2/2023
  *
- */ 
+ */
 
 #include "image.h"
 
@@ -183,6 +183,7 @@ namespace agl
       return result;
    }
 
+   // TODO
    Image Image::rotate90() const
    {
       Image result(0, 0);
@@ -223,7 +224,22 @@ namespace agl
 
    Image Image::swirl() const
    {
-      Image result(0, 0);
+      Image result(image_width, image_height);
+      for (int r = 0; r < image_height; r++)
+      {
+         for (int c = 0; c < image_width; c++)
+         {
+            Pixel pix = get(r, c);
+            float red = 255 - (pix.r);
+            float blue = 255 - (float)(pix.b);
+            float green = 255 - (float)(pix.g);
+
+            Pixel inverted = {pix.g, pix.b, pix.r};
+
+            result.set(r, c, inverted);
+         }
+      }
+
       return result;
    }
 
@@ -319,11 +335,26 @@ namespace agl
       return result;
    }
 
+   // done
    Image Image::invert() const
    {
-      Image image(0, 0);
+      Image result(image_width, image_height);
+      for (int r = 0; r < image_height; r++)
+      {
+         for (int c = 0; c < image_width; c++)
+         {
+            Pixel pix = get(r, c);
+            float red = 255 - (float)(pix.r);
+            float blue = 255 - (float)(pix.b);
+            float green = 255 - (float)(pix.g);
 
-      return image;
+            Pixel inverted = {red, green, blue};
+
+            result.set(r, c, inverted);
+         }
+      }
+
+      return result;
    }
 
    Image Image::grayscale() const
