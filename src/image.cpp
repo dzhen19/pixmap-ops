@@ -60,7 +60,6 @@ namespace agl
       image_data = new unsigned char[width * height * 3];
    }
 
-   // copy constructor
    Image::Image(const Image &orig)
    {
       this->image_width = orig.image_width;
@@ -74,7 +73,6 @@ namespace agl
       }
    }
 
-   // assignment operator
    Image &Image::operator=(const Image &orig)
    {
       this->image_width = orig.image_width;
@@ -119,7 +117,6 @@ namespace agl
       return image_data;
    }
 
-   // set entire image to another
    void Image::set(int width, int height, unsigned char *data)
    {
       image_width = width;
@@ -135,21 +132,18 @@ namespace agl
       return true;
    }
 
-   // todo make safe
    bool Image::save(const std::string &filename, bool flip) const
    {
       stbi_write_png(filename.c_str(), image_width, image_height, 3, image_data, 0);
       return true;
    }
 
-   // todo make safe
    Pixel Image::get(int row, int col) const
    {
       int index = 3 * (row * image_width + col);
       return Pixel{image_data[index], image_data[index + 1], image_data[index + 2]};
    }
 
-   // set one specific pixel
    void Image::set(int row, int col, const Pixel &color)
    {
       int index = 3 * (row * image_width + col);
@@ -163,7 +157,6 @@ namespace agl
       return Pixel{0, 0, 0};
    }
 
-   // set ith pixel to &c
    void Image::set(int i, const Pixel &c)
    {
    }
@@ -273,10 +266,6 @@ namespace agl
          for (int c = 0; c < image_width; c++)
          {
             Pixel pix = get(r, c);
-            float red = 255 - (pix.r);
-            float blue = 255 - (float)(pix.b);
-            float green = 255 - (float)(pix.g);
-
             Pixel swirled = {(unsigned char)pix.g,
                              (unsigned char)pix.b,
                              (unsigned char)pix.r};
@@ -565,10 +554,11 @@ namespace agl
 
    Image Image::gaussian() const
    {
-      int rad = 2;
+      // create filter
+      int rad = 7;
       int kernelWidth = rad * 2 + 1;
 
-      double kernel[rad][rad];
+      double kernel[kernelWidth][kernelWidth];
       double sigma = max(double(rad / 2), 1);
 
       double sum = 0.0;
@@ -581,38 +571,51 @@ namespace agl
 
             kernel[x + rad][y + rad] =
                 (1 / (2 * M_PI * pow(sigma, 2))) *
-                exp(-(x ^ 2 + y ^ 2) / (2 * pow(sigma, 2)));
+                exp(-(pow(x, 2) + pow(y, 2)) / (2 * pow(sigma, 2)));
 
             sum += kernel[x + rad][y + rad];
          }
-
-         for (int i = 0; i < kernelWidth; ++i)
-            for (int j = 0; j < kernelWidth; ++j)
-               kernel[i][j] /= sum;
       }
 
-      for (int i = 0; i < 5; ++i)
-      {
-         for (int j = 0; j < 5; ++j)
-            std::cout << kernel[i][j] << "\t";
-      }
+      // normalize filter
+      for (int i = 0; i < kernelWidth; ++i)
+         for (int j = 0; j < kernelWidth; ++j)
+            kernel[i][j] /= sum;
 
+      // create image
       Image result(image_width, image_height);
-      // for (int r = 0; r < image_height; r++)
-      // {
-      //    for (int c = 0; c < image_width; c++)
-      //    {
-      //       // handle edges - don't blur
-      //       if (r < rad || c < rad || r > image_height - rad || c > image_width - rad)
-      //       {
-      //          Pixel pix = get(r, c);
-      //          result.set(r, c, pix);
-      //       }
-      //       else
-      //       {
-      //       }
-      //    }
-      // }
+      for (int r = 0; r < image_height; r++)
+      {
+         for (int c = 0; c < image_width; c++)
+         {
+            Pixel pix = get(r, c);
+            if (r < rad || c < rad || r > image_height - rad - 1 || c > image_width - rad - 1)
+            {
+               // handle edges - don't blur
+               result.set(r, c, pix);
+            }
+            else
+            {
+               float redValue = 0.0;
+               float greenValue = 0.0;
+               float blueValue = 0.0;
+
+               for (int kernelX = -rad; kernelX <= rad; kernelX++)
+               {
+                  for (int kernelY = -rad; kernelY <= rad; kernelY++)
+                  {
+                     double kernelValue = kernel[kernelX + rad][kernelY + rad];
+                     redValue += float(get(r - kernelY, c - kernelX).r) * kernelValue;
+                     greenValue += float(get(r - kernelY, c - kernelX).g) * kernelValue;
+                     blueValue += float(get(r - kernelY, c - kernelX).b) * kernelValue;
+                  }
+               }
+
+               Pixel gaussed = {redValue, greenValue, blueValue};
+               result.set(r, c, gaussed);
+            }
+         }
+      }
 
       return result;
    }

@@ -5,26 +5,17 @@ using namespace agl;
 
 int main(int argc, char **argv)
 {
-   // todo: make at least one artwork!
-   Image image;
-   image.load("../images/markiplier.png");
-
-   // Image other;
+   Image mark;
+   mark.load("../images/markiplier.png");
    Image earth;
    earth.load("../images/earth.png");
+   Image resized_mark = mark.resize(400, 400);
+   resized_mark.greenscreen(earth);
 
-   // Image blend = image.lightest(other);
-   // blend.save("test_earth.png");
+   Image scenic;
+   scenic.load("../images/scenic.png");
+   Image result = scenic.gaussian();
+   scenic.save("scenic_gaussian.png");
 
-   // Pixel white = {(unsigned char)255,
-   //                (unsigned char)255,
-   //                (unsigned char)255};
-   // image.fill(white);
-
-   // Image result = image.gaussian();
-   // Image resized = image.resize(400, 400);
-   // Image result = resized.greenscreen(earth);
-   Image result = earth.gaussian();
-   result.save("test.png");
    return 0;
 }
