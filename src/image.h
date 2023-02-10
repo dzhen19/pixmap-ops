@@ -1,7 +1,7 @@
 // Copyright 2021, Aline Normoyle, alinen
 /**
- * This file is the header file for the Image class and Pixel struct. 
- * 
+ * This file is the header file for the Image class and Pixel struct.
+ *
  * @author: Derrick Zhen
  * @version: 2/2/2023
  *
@@ -17,9 +17,9 @@ namespace agl
 {
 
   /**
- * @brief Holder for a RGB color
- * 
- */
+   * @brief Holder for a RGB color
+   *
+   */
   struct Pixel
   {
     unsigned char r;
@@ -28,8 +28,8 @@ namespace agl
   };
 
   /**
- * @brief Implements loading, modifying, and saving RGB images
- */
+   * @brief Implements loading, modifying, and saving RGB images
+   */
   class Image
   {
   public:
@@ -40,79 +40,79 @@ namespace agl
 
     virtual ~Image();
 
-    /** 
-   * @brief Load the given filename 
-   * @param filename The file to load, relative to the running directory
-   * @param flip Whether the file should flipped vertally when loaded
-   * 
-   * @verbinclude sprites.cpp
-   */
+    /**
+     * @brief Load the given filename
+     * @param filename The file to load, relative to the running directory
+     * @param flip Whether the file should flipped vertally when loaded
+     *
+     * @verbinclude sprites.cpp
+     */
     bool load(const std::string &filename, bool flip = false);
 
-    /** 
-   * @brief Save the image to the given filename (.png)
-   * @param filename The file to load, relative to the running directory
-   * @param flip Whether the file should flipped vertally before being saved
-   */
+    /**
+     * @brief Save the image to the given filename (.png)
+     * @param filename The file to load, relative to the running directory
+     * @param flip Whether the file should flipped vertally before being saved
+     */
     bool save(const std::string &filename, bool flip = true) const;
 
     /** @brief Return the image width in pixels
-   */
+     */
     int width() const;
 
     /** @brief Return the image height in pixels
-   */
+     */
     int height() const;
 
-    /** 
-   * @brief Return the RGB data
-   *
-   * Data will have size width * height * 4 (RGB)
-   */
+    /**
+     * @brief Return the RGB data
+     *
+     * Data will have size width * height * 4 (RGB)
+     */
     unsigned char *data() const;
 
     /**
-   * @brief Replace image RGB data
-   * @param width The new image width
-   * @param height The new image height
-   *
-   * This call will replace the old data with the new data. Data should 
-   * match the size width * height * 3
-   */
+     * @brief Replace image RGB data
+     * @param width The new image width
+     * @param height The new image height
+     *
+     * This call will replace the old data with the new data. Data should
+     * match the size width * height * 3
+     */
     void set(int width, int height, unsigned char *data);
 
     /**
-   * @brief Get the pixel at index (row, col)
-   * @param row The row (value between 0 and height)
-   * @param col The col (value between 0 and width)
-   *
-   * Pixel colors are unsigned char, e.g. in range 0 to 255
-   */
+     * @brief Get the pixel at index (row, col)
+     * @param row The row (value between 0 and height)
+     * @param col The col (value between 0 and width)
+     *
+     * Pixel colors are unsigned char, e.g. in range 0 to 255
+     */
     Pixel get(int row, int col) const;
 
     /**
-   * @brief Set the pixel RGBA color at index (row, col)
-   * @param row The row (value between 0 and height)
-   * @param col The col (value between 0 and width)
-   *
-   * Pixel colors are unsigned char, e.g. in range 0 to 255
-   */
+     * @brief Set the pixel RGBA color at index (row, col)
+     * @param row The row (value between 0 and height)
+     * @param col The col (value between 0 and width)
+     *
+     * Pixel colors are unsigned char, e.g. in range 0 to 255
+     */
     void set(int row, int col, const Pixel &color);
 
     /**
- * @brief Set the pixel RGB color at index i
- * @param i The index (value between 0 and width * height)
- *
- * Pixel colors are unsigned char, e.g. in range 0 to 255
- */
+     * @brief Set the pixel RGB color at index i
+     * @param i The index (value between 0 and width * height)
+     *
+     * Pixel colors are unsigned char, e.g. in range 0 to 255
+     */
     Pixel get(int i) const;
 
     /**
- * @brief Set the pixel RGB color at index i
- * @param i The index (value between 0 and width * height)
- *
- * Pixel colors are unsigned char, e.g. in range 0 to 255
- */
+     * @brief Set the pixel RGB color at index i
+     * @param i The index (value between 0 and width * height)
+     *
+     * Pixel colors are unsigned char, e.g. in range 0 to 255
+     */
     void set(int i, const Pixel &c);
 
     // resize the image
@@ -198,6 +198,9 @@ namespace agl
     void fill(const Pixel &c);
 
     Image gaussian() const;
+
+    // replaces the green in the current image with a new background image of the same dimensions
+    Image greenscreen(const Image &newBg) const;
 
   private:
     int image_width;

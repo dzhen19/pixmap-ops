@@ -7,10 +7,11 @@ int main(int argc, char **argv)
 {
    // todo: make at least one artwork!
    Image image;
-   image.load("../images/earth.png");
+   image.load("../images/markiplier.png");
 
    // Image other;
-   // other.load("../images/flare.png");
+   Image earth;
+   earth.load("../images/earth.png");
 
    // Image blend = image.lightest(other);
    // blend.save("test_earth.png");
@@ -20,7 +21,10 @@ int main(int argc, char **argv)
    //                (unsigned char)255};
    // image.fill(white);
 
-   Image result = image.gaussian();
+   // Image result = image.gaussian();
+   // Image resized = image.resize(400, 400);
+   // Image result = resized.greenscreen(earth);
+   Image result = earth.gaussian();
    result.save("test.png");
    return 0;
 }

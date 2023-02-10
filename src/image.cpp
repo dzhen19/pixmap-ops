@@ -539,43 +539,81 @@ namespace agl
       return result;
    }
 
-   Image Image::gaussian() const
+   Image Image::greenscreen(const Image &newBg) const
    {
       Image result(image_width, image_height);
+
       for (int r = 0; r < image_height; r++)
       {
          for (int c = 0; c < image_width; c++)
          {
-            // handle edges - don't blur
-            if (r == 0 || c == 0 || r == image_height - 1 || c == image_width - 1)
-            {
-               Pixel pix = get(r, c);
-               result.set(r, c, pix);
-            }
-            else
-            {
-               // apply gaussian to neighbors
-               Pixel pix = get(r, c);
-               Pixel tl = get(r - 1, c - 1);
-               Pixel tr = get(r - 1, c + 1);
-               Pixel bl = get(r + 1, c - 1);
-               Pixel br = get(r + 1, c + 1);
-               Pixel t = get(r, c - 1);
-               Pixel b = get(r, c + 1);
-               Pixel l = get(r - 1, c);
-               Pixel right = get(r + 1, c);
+            Pixel pix = get(r, c);
+            float red = (float)(pix.r);
+            float blue = (float)(pix.b);
+            float green = (float)(pix.g);
 
-               float red = (tl.r + tr.r + bl.r + br.r + t.r + b.r + l.r + right.r + pix.r) / 9;
-               float green = (tl.g + tr.g + bl.g + br.g + t.g + b.g + l.g + right.g + pix.g) / 9;
-               float blue = (tl.b + tr.b + bl.b + br.b + t.b + b.b + l.b + right.b + pix.b) / 9;
-
-               Pixel gaussed = {(unsigned char)red,
-                                (unsigned char)green,
-                                (unsigned char)blue};
-               result.set(r, c, gaussed);
+            Pixel bg_pix = newBg.get(r, c);
+            result.set(r, c, pix);
+            if (red < 10 && blue < 10 && green > 250)
+            {
+               result.set(r, c, bg_pix);
             }
          }
       }
+      return result;
+   }
+
+   Image Image::gaussian() const
+   {
+      int rad = 2;
+      int kernelWidth = rad * 2 + 1;
+
+      double kernel[rad][rad];
+      double sigma = max(double(rad / 2), 1);
+
+      double sum = 0.0;
+
+      for (int x = -rad; x <= rad; x++)
+      {
+         for (int y = -rad; y <= rad; y++)
+         {
+            double distance = sqrt(x * x + y * y);
+
+            kernel[x + rad][y + rad] =
+                (1 / (2 * M_PI * pow(sigma, 2))) *
+                exp(-(x ^ 2 + y ^ 2) / (2 * pow(sigma, 2)));
+
+            sum += kernel[x + rad][y + rad];
+         }
+
+         for (int i = 0; i < kernelWidth; ++i)
+            for (int j = 0; j < kernelWidth; ++j)
+               kernel[i][j] /= sum;
+      }
+
+      for (int i = 0; i < 5; ++i)
+      {
+         for (int j = 0; j < 5; ++j)
+            std::cout << kernel[i][j] << "\t";
+      }
+
+      Image result(image_width, image_height);
+      // for (int r = 0; r < image_height; r++)
+      // {
+      //    for (int c = 0; c < image_width; c++)
+      //    {
+      //       // handle edges - don't blur
+      //       if (r < rad || c < rad || r > image_height - rad || c > image_width - rad)
+      //       {
+      //          Pixel pix = get(r, c);
+      //          result.set(r, c, pix);
+      //       }
+      //       else
+      //       {
+      //       }
+      //    }
+      // }
+
       return result;
    }
 
