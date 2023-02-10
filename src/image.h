@@ -197,7 +197,7 @@ namespace agl
     // Fill this image with a color
     void fill(const Pixel &c);
 
-    Image gaussian() const;
+    Image gaussian(int rad) const;
 
     // replaces the green in the current image with a new background image of the same dimensions
     Image greenscreen(const Image &newBg) const;
