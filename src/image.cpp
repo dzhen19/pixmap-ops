@@ -552,10 +552,9 @@ namespace agl
       return result;
    }
 
-   Image Image::gaussian() const
+   Image Image::gaussian(int rad) const
    {
       // create filter
-      int rad = 7;
       int kernelWidth = rad * 2 + 1;
 
       double kernel[kernelWidth][kernelWidth];
@@ -611,7 +610,9 @@ namespace agl
                   }
                }
 
-               Pixel gaussed = {redValue, greenValue, blueValue};
+               Pixel gaussed = {(unsigned char)redValue,
+                                (unsigned char)greenValue,
+                                (unsigned char)blueValue};
                result.set(r, c, gaussed);
             }
          }
